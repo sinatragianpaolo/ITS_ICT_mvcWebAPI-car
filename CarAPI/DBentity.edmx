@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="CatDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Car">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Model" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Brand" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Year" Type="int" Nullable="false" />
+          <Property Name="Engine" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Price" Type="money" />
+        </EntityType>
+        <!--Errori trovati durante la generazione:
+avviso 6002: Nessuna chiave primaria definita per la tabella/visualizzazione 'C:\USERS\G.SINATRA\DESKTOP\C#\CARAPI\APP_DATA\CATDB.MDF.dbo.CarOptional'. La chiave è stata dedotta e la definizione è stata creata come tabella/visualizzazione di sola lettura.-->
+        <EntityType Name="CarOptional">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="IdCar" />
+            <PropertyRef Name="IdOptional" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="IdCar" Type="int" Nullable="false" />
+          <Property Name="IdOptional" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Optional">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Type" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Price" Type="money" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_CarOptional_ToCar">
+          <End Role="Car" Type="Self.Car" Multiplicity="1" />
+          <End Role="CarOptional" Type="Self.CarOptional" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Car">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CarOptional">
+              <PropertyRef Name="IdCar" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CarOptional_ToOptional">
+          <End Role="Optional" Type="Self.Optional" Multiplicity="1" />
+          <End Role="CarOptional" Type="Self.CarOptional" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Optional">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CarOptional">
+              <PropertyRef Name="IdOptional" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="GetAllCars" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <EntityContainer Name="CatDBModelStoreContainer">
+          <EntitySet Name="Car" EntityType="Self.Car" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Optional" EntityType="Self.Optional" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CarOptional" EntityType="Self.CarOptional" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [CarOptional].[Id] AS [Id], 
+    [CarOptional].[IdCar] AS [IdCar], 
+    [CarOptional].[IdOptional] AS [IdOptional]
+    FROM [dbo].[CarOptional] AS [CarOptional]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK_CarOptional_ToCar" Association="Self.FK_CarOptional_ToCar">
+            <End Role="Car" EntitySet="Car" />
+            <End Role="CarOptional" EntitySet="CarOptional" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CarOptional_ToOptional" Association="Self.FK_CarOptional_ToOptional">
+            <End Role="Optional" EntitySet="Optional" />
+            <End Role="CarOptional" EntitySet="CarOptional" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="CatDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Car">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Model" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Brand" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Year" Type="Int32" Nullable="false" />
+          <Property Name="Engine" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Price" Type="Decimal" Precision="19" Scale="4" />
+          <NavigationProperty Name="CarOptional" Relationship="Self.FK_CarOptional_ToCar" FromRole="Car" ToRole="CarOptional" />
+        </EntityType>
+        <EntityType Name="Optional">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Price" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="CarOptional" Relationship="Self.FK_CarOptional_ToOptional" FromRole="Optional" ToRole="CarOptional" />
+        </EntityType>
+        <EntityType Name="CarOptional">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="IdCar" />
+            <PropertyRef Name="IdOptional" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="IdCar" Type="Int32" Nullable="false" />
+          <Property Name="IdOptional" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Car" Relationship="Self.FK_CarOptional_ToCar" FromRole="CarOptional" ToRole="Car" />
+          <NavigationProperty Name="Optional" Relationship="Self.FK_CarOptional_ToOptional" FromRole="CarOptional" ToRole="Optional" />
+        </EntityType>
+        <Association Name="FK_CarOptional_ToCar">
+          <End Role="Car" Type="Self.Car" Multiplicity="1" />
+          <End Role="CarOptional" Type="Self.CarOptional" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Car">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CarOptional">
+              <PropertyRef Name="IdCar" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CarOptional_ToOptional">
+          <End Role="Optional" Type="Self.Optional" Multiplicity="1" />
+          <End Role="CarOptional" Type="Self.CarOptional" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Optional">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CarOptional">
+              <PropertyRef Name="IdOptional" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="CatDBEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Car" EntityType="Self.Car" />
+          <EntitySet Name="Optional" EntityType="Self.Optional" />
+          <EntitySet Name="CarOptional" EntityType="Self.CarOptional" />
+          <AssociationSet Name="FK_CarOptional_ToCar" Association="Self.FK_CarOptional_ToCar">
+            <End Role="Car" EntitySet="Car" />
+            <End Role="CarOptional" EntitySet="CarOptional" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CarOptional_ToOptional" Association="Self.FK_CarOptional_ToOptional">
+            <End Role="Optional" EntitySet="Optional" />
+            <End Role="CarOptional" EntitySet="CarOptional" />
+          </AssociationSet>
+          <FunctionImport Name="GetAllCars" ReturnType="Collection(CatDBModel.GetAllCars_Result)" />
+        </EntityContainer>
+        <ComplexType Name="GetAllCars_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="String" Name="Model" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="Brand" Nullable="false" MaxLength="50" />
+          <Property Type="Int32" Name="Year" Nullable="false" />
+          <Property Type="String" Name="Engine" Nullable="false" MaxLength="50" />
+          <Property Type="Decimal" Name="Price" Nullable="true" Precision="19" />
+          <Property Type="Int32" Name="Id1" Nullable="false" />
+          <Property Type="Int32" Name="IdCar" Nullable="false" />
+          <Property Type="Int32" Name="IdOptional" Nullable="false" />
+          <Property Type="Int32" Name="Id2" Nullable="false" />
+          <Property Type="String" Name="Type" Nullable="false" MaxLength="50" />
+          <Property Type="Decimal" Name="Price1" Nullable="false" Precision="19" />
+          <Property Type="String" Name="Description" Nullable="false" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="CatDBModelStoreContainer" CdmEntityContainer="CatDBEntities">
+          <EntitySetMapping Name="Car">
+            <EntityTypeMapping TypeName="CatDBModel.Car">
+              <MappingFragment StoreEntitySet="Car">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="Brand" ColumnName="Brand" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="Engine" ColumnName="Engine" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Optional">
+            <EntityTypeMapping TypeName="CatDBModel.Optional">
+              <MappingFragment StoreEntitySet="Optional">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CarOptional">
+            <EntityTypeMapping TypeName="CatDBModel.CarOptional">
+              <MappingFragment StoreEntitySet="CarOptional">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="IdCar" ColumnName="IdCar" />
+                <ScalarProperty Name="IdOptional" ColumnName="IdOptional" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="GetAllCars" FunctionName="CatDBModel.Store.GetAllCars">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="CatDBModel.GetAllCars_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="Brand" ColumnName="Brand" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="Engine" ColumnName="Engine" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Id1" ColumnName="Id1" />
+                <ScalarProperty Name="IdCar" ColumnName="IdCar" />
+                <ScalarProperty Name="IdOptional" ColumnName="IdOptional" />
+                <ScalarProperty Name="Id2" ColumnName="Id2" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Price1" ColumnName="Price1" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Nessuno" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
